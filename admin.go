@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"path/filepath"
 	"reflect"
-	"strings"
 
 	"github.com/jinzhu/gorm"
 	"github.com/jinzhu/inflection"
@@ -111,12 +110,11 @@ func (admin *Admin) SetAssetFS(assetFS assetfs.Interface) {
 func (admin *Admin) RegisterViewPath(pth string) {
 	if admin.AssetFS.RegisterPath(filepath.Join(utils.AppRoot, "vendor", pth)) != nil {
 		for _, gopath := range utils.GOPATH() {
-			if admin.AssetFS.RegisterPath(filepath.Join(gopath, "src", pth)) == nil {
+			if admin.AssetFS.RegisterPath(filepath.Join(gopath, getDepVersionFromMod(pth))) == nil {
 				break
 			}
 
-			pth = strings.TrimSuffix(pth, "/views")
-			if admin.AssetFS.RegisterPath(filepath.Join(gopath, getDepVersionFromMod(pth), "views")) == nil {
+			if admin.AssetFS.RegisterPath(filepath.Join(gopath, "src", pth)) == nil {
 				break
 			}
 		}
